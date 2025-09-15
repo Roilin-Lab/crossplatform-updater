@@ -8,7 +8,6 @@ public class CrossplatformUpdaterApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CrossplatformUpdaterApplication.class, args);
-		System.out.println("Hello world");
 	}
 
 }
