@@ -1,6 +1,6 @@
 services:
   client:
-    image: client:0.0.2
+    image: client
     build:
       context: .
       dockerfile: Dockerfile
@@ -8,3 +8,8 @@ services:
       - "8181:8181"
     environment:
       - SERVER_PORT= 8181
+    develop:
+      watch:
+        - action: rebuild
+          path: ./src
+          target: /app/src
