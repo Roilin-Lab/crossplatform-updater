@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 import io.github.roilin.crossplatform_updater.models.AppVersion;
 import io.github.roilin.crossplatform_updater.models.Platform;
 import io.github.roilin.crossplatform_updater.repositories.AppVersionRepository;
+import io.github.roilin.crossplatform_updater.services.AppVersionService;
+import io.github.roilin.crossplatform_updater.services.AppVersionServiceImpl;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -21,21 +23,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequiredArgsConstructor
 public class AppVersionsController {
 
-  private final AppVersionRepository appVersionRepository;
+  private final AppVersionService appVersionService;
 
   @GetMapping("/versions")
   public Iterable<AppVersion> allVersions(@RequestParam(required = false) Platform platform) {
-    return appVersionRepository.findAll();
+    return appVersionService.findAll();
   }
 
   @GetMapping("/versions/latest")
   public ResponseEntity<AppVersion> getLatestVersion(@RequestParam Platform platform) {
-    return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(this.appVersionService.findLatesByPlatform(platform));
   }
 
   @PostMapping("/versions")
-  public ResponseEntity<AppVersion> createVersion(@RequestBody AppVersion entity) {
-    AppVersion version = this.appVersionRepository.save(entity);
-    return ResponseEntity.status(HttpStatus.CREATED).body(version);
+  public ResponseEntity<AppVersion> createVersion(@RequestBody AppVersion appVersion) {
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(this.appVersionService.save(appVersion));
   }
 }

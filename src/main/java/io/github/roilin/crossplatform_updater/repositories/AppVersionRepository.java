@@ -1,7 +1,13 @@
 package io.github.roilin.crossplatform_updater.repositories;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import io.github.roilin.crossplatform_updater.models.AppVersion;
+import io.github.roilin.crossplatform_updater.models.Platform;
 
-public interface AppVersionRepository extends CrudRepository<AppVersion, Integer> {}
+import java.util.List;
+
+
+public interface AppVersionRepository extends JpaRepository<AppVersion, Integer> {
+  List<AppVersion> findByPlatform(Platform platform);
+}
