@@ -22,14 +22,12 @@ public class AppVersionServiceImpl implements AppVersionService {
 
   @Override
   public AppVersion findById(Integer id) {
-    return appVersionRepository.findById(id).orElseThrow();
+    return appVersionRepository.findById(id).orElse(null);
   }
 
   @Override
   public AppVersion findLatesByPlatform(Platform platform) {
-    List<AppVersion> appVersions = appVersionRepository.findByPlatform(platform);
-    appVersions.sort(null);
-    return appVersions.get(0);
+    return appVersionRepository.findFirstByPlatformAndIsActiveOrderByReleaseDateDesc(platform, true);
   }
 
   @Override

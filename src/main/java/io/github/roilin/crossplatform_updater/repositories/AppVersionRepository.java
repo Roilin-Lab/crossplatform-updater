@@ -10,4 +10,5 @@ import java.util.List;
 
 public interface AppVersionRepository extends JpaRepository<AppVersion, Integer> {
   List<AppVersion> findByPlatform(Platform platform);
+  AppVersion findFirstByPlatformAndIsActiveOrderByReleaseDateDesc(Platform platform, boolean isActive);
 }
