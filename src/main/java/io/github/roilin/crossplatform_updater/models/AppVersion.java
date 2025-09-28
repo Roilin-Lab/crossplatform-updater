@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "app_version")
-public class AppVersion implements Comparable<AppVersion> {
+public class AppVersion {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
@@ -38,9 +38,4 @@ public class AppVersion implements Comparable<AppVersion> {
 
   @Enumerated(EnumType.STRING)
   private UpdateType updateType;
-
-  @Override
-  public int compareTo(AppVersion other) {
-    return other.getReleaseDate().compareTo(this.releaseDate);
-  }
 }
