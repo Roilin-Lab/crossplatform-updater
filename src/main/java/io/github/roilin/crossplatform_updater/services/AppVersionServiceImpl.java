@@ -27,7 +27,7 @@ public class AppVersionServiceImpl implements AppVersionService {
 
   @Override
   public AppVersion findLatesByPlatform(Platform platform) {
-    return appVersionRepository.findFirstByPlatformAndIsActiveOrderByReleaseDateDesc(platform, true);
+    return appVersionRepository.findFirstByPlatformAndIsActiveTrueOrderByReleaseDateDesc(platform);
   }
 
   @Override
