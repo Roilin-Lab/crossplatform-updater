@@ -3,7 +3,7 @@ package io.github.roilin.crossplatform_updater.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import io.github.roilin.crossplatform_updater.models.AppVersion;
-import io.github.roilin.crossplatform_updater.models.Platform;
+import io.github.roilin.crossplatform_updater.models.enums.Platform;
 
 import java.util.List;
 

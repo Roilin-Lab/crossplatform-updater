@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.github.roilin.crossplatform_updater.models.AppVersion;
-import io.github.roilin.crossplatform_updater.models.Platform;
+import io.github.roilin.crossplatform_updater.models.enums.Platform;
 import io.github.roilin.crossplatform_updater.services.AppVersionService;
 import lombok.RequiredArgsConstructor;
 

@@ -5,7 +5,11 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
+import io.github.roilin.crossplatform_updater.models.enums.Platform;
+import io.github.roilin.crossplatform_updater.models.enums.UpdateType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,14 +29,14 @@ public class AppVersion implements Comparable<AppVersion> {
   private Integer id;
   private String version;
 
-  @JdbcType(PostgreSQLEnumJdbcType.class)
-  private Platform platform; 
-  
+  @Enumerated(EnumType.STRING)
+  private Platform platform;
+
   private LocalDateTime releaseDate;
   private String changeLog;
   private boolean isActive;
-  
-  @JdbcType(PostgreSQLEnumJdbcType.class)
+
+  @Enumerated(EnumType.STRING)
   private UpdateType updateType;
 
   @Override

@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import io.github.roilin.crossplatform_updater.models.AppVersion;
-import io.github.roilin.crossplatform_updater.models.Platform;
+import io.github.roilin.crossplatform_updater.models.enums.Platform;
 import io.github.roilin.crossplatform_updater.repositories.AppVersionRepository;
 import lombok.RequiredArgsConstructor;
 
