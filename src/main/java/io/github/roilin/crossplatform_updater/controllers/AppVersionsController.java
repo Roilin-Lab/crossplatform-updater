@@ -24,20 +24,20 @@ public class AppVersionsController {
 
   @GetMapping("/versions")
   public Iterable<AppVersion> allVersions() {
-    return appVersionService.findAll();
+    return appVersionService.getAll();
   }
 
   @GetMapping("/versions/latest")
   public ResponseEntity<AppVersion> getLatestVersion(@RequestParam Platform platform) {
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(this.appVersionService.findLatesByPlatform(platform));
+        .body(this.appVersionService.getLatesByPlatform(platform));
   }
 
   @PostMapping("/versions")
   public ResponseEntity<AppVersion> createVersion(@RequestBody AppVersion appVersion) {
     return ResponseEntity
         .status(HttpStatus.CREATED)
-        .body(this.appVersionService.save(appVersion));
+        .body(this.appVersionService.create(appVersion));
   }
 }

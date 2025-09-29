@@ -17,22 +17,22 @@ public class AppVersionServiceImpl implements AppVersionService {
   private final AppVersionRepository appVersionRepository;
 
   @Override
-  public List<AppVersion> findAll() {
+  public List<AppVersion> getAll() {
     return (List<AppVersion>) appVersionRepository.findAll();
   }
 
   @Override
-  public AppVersion findById(Integer id) {
+  public AppVersion getById(Integer id) {
     return appVersionRepository.findById(id).orElse(null);
   }
 
   @Override
-  public AppVersion findLatesByPlatform(Platform platform) {
+  public AppVersion getLatesByPlatform(Platform platform) {
     return appVersionRepository.findFirstByPlatformAndIsActiveTrueOrderByReleaseDateDesc(platform);
   }
 
   @Override
-  public AppVersion save(AppVersion appVersion) {
+  public AppVersion create(AppVersion appVersion) {
     return appVersionRepository.save(appVersion);
   }
 

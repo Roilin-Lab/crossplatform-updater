@@ -6,13 +6,13 @@ import io.github.roilin.crossplatform_updater.models.AppVersion;
 import io.github.roilin.crossplatform_updater.models.enums.Platform;
 
 public interface AppVersionService {
-  List<AppVersion> findAll();
+  List<AppVersion> getAll();
 
-  AppVersion findById(Integer id);
+  AppVersion getById(Integer id);
   
-  AppVersion findLatesByPlatform(Platform platform);
+  AppVersion getLatesByPlatform(Platform platform);
 
-  AppVersion save(AppVersion version);
+  AppVersion create(AppVersion version);
 
   void deleteById(Integer id);
 }
