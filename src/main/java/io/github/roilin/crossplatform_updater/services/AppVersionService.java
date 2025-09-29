@@ -12,7 +12,7 @@ public interface AppVersionService {
   
   AppVersion findLatesByPlatform(Platform platform);
 
-  AppVersion save(AppVersion book);
+  AppVersion save(AppVersion version);
 
   void deleteById(Integer id);
 }
