@@ -12,6 +12,8 @@ public interface AppVersionService {
   
   AppVersion getLatesByPlatform(Platform platform);
 
+  AppVersion getByVersionAndPlatform(String version, Platform platform);
+
   AppVersion create(AppVersion version);
 
   void deleteById(Integer id);

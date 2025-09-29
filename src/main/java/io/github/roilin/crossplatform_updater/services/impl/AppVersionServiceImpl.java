@@ -32,6 +32,11 @@ public class AppVersionServiceImpl implements AppVersionService {
   }
 
   @Override
+  public AppVersion getByVersionAndPlatform(String version, Platform platform) {
+    return appVersionRepository.findByVersionAndPlatform(version, platform);
+  }
+
+  @Override
   public AppVersion create(AppVersion appVersion) {
     return appVersionRepository.save(appVersion);
   }
