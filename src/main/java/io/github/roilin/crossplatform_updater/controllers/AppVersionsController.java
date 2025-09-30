@@ -23,8 +23,8 @@ public class AppVersionsController {
   private final AppVersionService appVersionService;
 
   @GetMapping("/versions")
-  public Iterable<AppVersion> allVersions() {
-    return appVersionService.getAll();
+  public Iterable<AppVersion> allVersions(@RequestParam(required = false) Platform platform) {
+    return appVersionService.getAll(platform);
   }
 
   @GetMapping("/versions/latest")
