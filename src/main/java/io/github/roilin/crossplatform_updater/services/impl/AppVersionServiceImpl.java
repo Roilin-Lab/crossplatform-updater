@@ -1,9 +1,12 @@
 package io.github.roilin.crossplatform_updater.services.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import io.github.roilin.crossplatform_updater.dto.AppVersionRequest;
+import io.github.roilin.crossplatform_updater.dto.AppVersionResponse;
 import io.github.roilin.crossplatform_updater.models.AppVersion;
 import io.github.roilin.crossplatform_updater.models.enums.Platform;
 import io.github.roilin.crossplatform_updater.repositories.AppVersionRepository;
@@ -17,35 +20,39 @@ public class AppVersionServiceImpl implements AppVersionService {
   private final AppVersionRepository appVersionRepository;
 
   @Override
-  public List<AppVersion> getAll(Platform platform) {
+  public List<AppVersionResponse> getAll(Platform platform) {
     if (platform == null) {
-      return (List<AppVersion>) appVersionRepository.findAll();
+      return appVersionRepository.findAll()
+          .stream().map(this::toDto)
+          .collect(Collectors.toList());
     }
-    return (List<AppVersion>) appVersionRepository.findAllByPlatform(platform);
+    return appVersionRepository.findAllByPlatform(platform)
+        .stream().map(this::toDto)
+        .collect(Collectors.toList());
   }
 
   @Override
-  public AppVersion getById(Integer id) {
-    return appVersionRepository.findById(id).orElse(null);
+  public AppVersionResponse getById(Integer id) {
+    return toDto(appVersionRepository.findById(id).orElse(null));
   }
 
   @Override
-  public AppVersion getLatesByPlatform(Platform platform) {
-    return appVersionRepository.findFirstByPlatformAndIsActiveTrueOrderByReleaseDateDesc(platform);
+  public AppVersionResponse getLatesByPlatform(Platform platform) {
+    return toDto(appVersionRepository.findFirstByPlatformAndIsActiveTrueOrderByReleaseDateDesc(platform));
   }
 
   @Override
-  public AppVersion getByVersionAndPlatform(String version, Platform platform) {
-    return appVersionRepository.findByVersionAndPlatform(version, platform);
+  public AppVersionResponse getByVersionAndPlatform(String version, Platform platform) {
+    return toDto(appVersionRepository.findByVersionAndPlatform(version, platform));
   }
 
   @Override
-  public AppVersion create(AppVersion appVersion) {
-    return appVersionRepository.save(appVersion);
+  public AppVersionResponse create(AppVersionRequest appVersion) {
+    return toDto(appVersionRepository.save(toEntity(appVersion)));
   }
 
   @Override
-  public AppVersion update(AppVersion version, Integer id) {
+  public AppVersionResponse update(AppVersionRequest version, Integer id) {
     AppVersion updatedVersion = appVersionRepository.findById(id).orElse(null);
     updatedVersion.setVersion(version.getVersion());
     updatedVersion.setChangeLog(version.getChangeLog());
@@ -53,11 +60,33 @@ public class AppVersionServiceImpl implements AppVersionService {
     updatedVersion.setUpdateType(version.getUpdateType());
     updatedVersion.setPlatform(version.getPlatform());
     updatedVersion.setActive(version.isActive());
-    return appVersionRepository.save(updatedVersion);
+    return toDto(appVersionRepository.save(updatedVersion));
   }
 
   @Override
   public void deleteById(Integer id) {
     appVersionRepository.deleteById(id);
+  }
+
+  private AppVersionResponse toDto(AppVersion version) {
+    return new AppVersionResponse(
+        version.getId(),
+        version.getVersion(),
+        version.getPlatform(),
+        version.getReleaseDate(),
+        version.getChangeLog(),
+        version.isActive(),
+        version.getUpdateType());
+  }
+  
+  private AppVersion toEntity(AppVersionRequest dto) {
+    AppVersion entity = new AppVersion();
+    entity.setVersion(dto.getVersion());
+    entity.setChangeLog(dto.getChangeLog());
+    entity.setReleaseDate(dto.getReleaseDate());
+    entity.setUpdateType(dto.getUpdateType());
+    entity.setPlatform(dto.getPlatform());
+    entity.setActive(dto.isActive());
+    return entity;
   }
 }

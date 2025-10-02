@@ -2,21 +2,22 @@ package io.github.roilin.crossplatform_updater.services;
 
 import java.util.List;
 
-import io.github.roilin.crossplatform_updater.models.AppVersion;
+import io.github.roilin.crossplatform_updater.dto.AppVersionRequest;
+import io.github.roilin.crossplatform_updater.dto.AppVersionResponse;
 import io.github.roilin.crossplatform_updater.models.enums.Platform;
 
 public interface AppVersionService {
-  List<AppVersion> getAll(Platform platform);
+  List<AppVersionResponse> getAll(Platform platform);
 
-  AppVersion getById(Integer id);
+  AppVersionResponse getById(Integer id);
   
-  AppVersion getLatesByPlatform(Platform platform);
+  AppVersionResponse getLatesByPlatform(Platform platform);
 
-  AppVersion getByVersionAndPlatform(String version, Platform platform);
+  AppVersionResponse getByVersionAndPlatform(String version, Platform platform);
 
-  AppVersion create(AppVersion version);
+  AppVersionResponse create(AppVersionRequest version);
 
-  AppVersion update(AppVersion version, Integer id);
+  AppVersionResponse update(AppVersionRequest version, Integer id);
 
   void deleteById(Integer id);
 }

@@ -3,7 +3,8 @@ package io.github.roilin.crossplatform_updater.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.github.roilin.crossplatform_updater.models.AppVersion;
+import io.github.roilin.crossplatform_updater.dto.AppVersionRequest;
+import io.github.roilin.crossplatform_updater.dto.AppVersionResponse;
 import io.github.roilin.crossplatform_updater.models.enums.Platform;
 import io.github.roilin.crossplatform_updater.services.AppVersionService;
 import lombok.RequiredArgsConstructor;
@@ -26,26 +27,26 @@ public class AppVersionsController {
   private final AppVersionService appVersionService;
 
   @GetMapping("/versions")
-  public Iterable<AppVersion> allVersions(@RequestParam(required = false) Platform platform) {
+  public Iterable<AppVersionResponse> allVersions(@RequestParam(required = false) Platform platform) {
     return appVersionService.getAll(platform);
   }
 
   @GetMapping("/versions/latest")
-  public ResponseEntity<AppVersion> getLatestVersion(@RequestParam Platform platform) {
+  public ResponseEntity<AppVersionResponse> getLatestVersion(@RequestParam Platform platform) {
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(this.appVersionService.getLatesByPlatform(platform));
   }
 
   @PostMapping("/versions")
-  public ResponseEntity<AppVersion> createVersion(@RequestBody AppVersion appVersion) {
+  public ResponseEntity<AppVersionResponse> createVersion(@RequestBody AppVersionRequest appVersion) {
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(this.appVersionService.create(appVersion));
   }
 
   @PutMapping("versions/{id}")
-  public ResponseEntity<AppVersion> updateVersion(@PathVariable Integer id, @RequestBody AppVersion appVersion) {
+  public ResponseEntity<AppVersionResponse> updateVersion(@PathVariable Integer id, @RequestBody AppVersionRequest appVersion) {
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(appVersionService.update(appVersion, id));

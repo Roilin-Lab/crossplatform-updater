@@ -3,8 +3,8 @@ package io.github.roilin.crossplatform_updater.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.github.roilin.crossplatform_updater.dto.UserDeviceDto;
-import io.github.roilin.crossplatform_updater.models.UserDevice;
+import io.github.roilin.crossplatform_updater.dto.UserDeviceRequest;
+import io.github.roilin.crossplatform_updater.dto.UserDeviceResponse;
 import io.github.roilin.crossplatform_updater.services.UserDeviceService;
 import lombok.RequiredArgsConstructor;
 
@@ -25,14 +25,12 @@ public class UserDeviceController {
   private final UserDeviceService userDeviceService;
 
   @GetMapping("/devices")
-  public List<UserDevice> getAllDevices(@RequestParam String username) {
-    List<UserDevice> devices = userDeviceService.getAllByUsername(username);
-    return devices;
+  public List<UserDeviceResponse> getAllDevices(@RequestParam String username) {
+    return userDeviceService.getAllByUsername(username);
   }
 
   @PostMapping("/devices")
-  public ResponseEntity<UserDevice> createDevice(@RequestBody UserDeviceDto device) {
-    UserDevice newDevice = userDeviceService.create(device);
-    return ResponseEntity.status(HttpStatus.CREATED).body(newDevice);
+  public ResponseEntity<UserDeviceResponse> createDevice(@RequestBody UserDeviceRequest device) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(userDeviceService.create(device));
   }
 }

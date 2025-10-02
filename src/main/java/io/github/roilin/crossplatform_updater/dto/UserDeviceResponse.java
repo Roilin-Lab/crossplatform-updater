@@ -1,20 +1,17 @@
 package io.github.roilin.crossplatform_updater.dto;
 
 import io.github.roilin.crossplatform_updater.models.enums.Platform;
-import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class UserDeviceDto {
-
-  @NotEmpty
+@AllArgsConstructor
+public class UserDeviceResponse {
   private String name;
-  
-  @NotEmpty
+
   private Platform platform;
 
-  @NotEmpty
   private String ownerUsername;
-  
-  private String version;
+
+  private String currentVersion;
 }
