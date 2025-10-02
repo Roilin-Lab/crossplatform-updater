@@ -31,6 +31,11 @@ public class AppVersionsController {
     return appVersionService.getAll(platform);
   }
 
+  @GetMapping("/versions/{id}")
+  public ResponseEntity<AppVersionResponse> getVersions(@PathVariable Integer id) {
+    return ResponseEntity.status(HttpStatus.OK).body(appVersionService.getById(id));
+  }
+
   @GetMapping("/versions/latest")
   public ResponseEntity<AppVersionResponse> getLatestVersion(@RequestParam Platform platform) {
     return ResponseEntity
@@ -46,7 +51,8 @@ public class AppVersionsController {
   }
 
   @PutMapping("versions/{id}")
-  public ResponseEntity<AppVersionResponse> updateVersion(@PathVariable Integer id, @RequestBody AppVersionRequest appVersion) {
+  public ResponseEntity<AppVersionResponse> updateVersion(@PathVariable Integer id,
+      @RequestBody AppVersionRequest appVersion) {
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(appVersionService.update(appVersion, id));

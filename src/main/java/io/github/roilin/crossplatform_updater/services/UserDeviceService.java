@@ -15,5 +15,7 @@ public interface UserDeviceService {
 
   UserDeviceResponse create(UserDeviceRequest device);
 
+  UserDeviceResponse update(UserDeviceRequest device, Long id);
+
   void deleteById(Long id);
 }

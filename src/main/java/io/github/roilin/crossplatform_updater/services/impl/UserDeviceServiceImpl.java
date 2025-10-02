@@ -55,16 +55,33 @@ public class UserDeviceServiceImpl implements UserDeviceService {
   }
 
   @Override
+  public UserDeviceResponse update(UserDeviceRequest deviceDto, Long id) {
+    UserDevice device = userDeviceRepository.findById(id).orElse(null);
+
+    User user = userRepository.findByUsername(deviceDto.getOwnerUsername()).orElseThrow();
+
+    AppVersion version = appVersionRepository
+        .findFirstByPlatformAndIsActiveTrueOrderByReleaseDateDesc(deviceDto.getPlatform());
+
+    device.setName(deviceDto.getName());
+    device.setPlatform(deviceDto.getPlatform());
+    device.setLastSeen(LocalDateTime.now());
+    device.setVersion(version);
+    device.setUser(user);
+    return toDto(userDeviceRepository.save(device));
+  }
+
+  @Override
   public void deleteById(Long id) {
     userDeviceRepository.deleteById(id);
   }
 
   private UserDeviceResponse toDto(UserDevice entity) {
     return new UserDeviceResponse(
-      entity.getName(),
-      entity.getPlatform(),
-      entity.getUser().getUsername(),
-      entity.getVersion().getVersion());
+        entity.getName(),
+        entity.getPlatform(),
+        entity.getUser().getUsername(),
+        entity.getVersion().getVersion());
   }
 
   private UserDevice toEntity(UserDeviceRequest dto) {
