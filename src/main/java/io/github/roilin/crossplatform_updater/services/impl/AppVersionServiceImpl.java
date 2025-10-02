@@ -45,6 +45,18 @@ public class AppVersionServiceImpl implements AppVersionService {
   }
 
   @Override
+  public AppVersion update(AppVersion version, Integer id) {
+    AppVersion updatedVersion = appVersionRepository.findById(id).orElse(null);
+    updatedVersion.setVersion(version.getVersion());
+    updatedVersion.setChangeLog(version.getChangeLog());
+    updatedVersion.setReleaseDate(version.getReleaseDate());
+    updatedVersion.setUpdateType(version.getUpdateType());
+    updatedVersion.setPlatform(version.getPlatform());
+    updatedVersion.setActive(version.isActive());
+    return appVersionRepository.save(updatedVersion);
+  }
+
+  @Override
   public void deleteById(Integer id) {
     appVersionRepository.deleteById(id);
   }

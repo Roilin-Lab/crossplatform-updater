@@ -10,10 +10,13 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/api")
@@ -39,5 +42,18 @@ public class AppVersionsController {
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(this.appVersionService.create(appVersion));
+  }
+
+  @PutMapping("versions/{id}")
+  public ResponseEntity<AppVersion> updateVersion(@PathVariable Integer id, @RequestBody AppVersion appVersion) {
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(appVersionService.update(appVersion, id));
+  }
+
+  @DeleteMapping("versions/{id}")
+  public ResponseEntity<String> deleteVersion(@PathVariable Integer id) {
+    appVersionService.deleteById(id);
+    return ResponseEntity.status(HttpStatus.OK).body("App version deleted successfully.");
   }
 }
