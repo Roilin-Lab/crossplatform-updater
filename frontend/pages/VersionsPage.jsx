@@ -170,7 +170,7 @@ export const VersionsPage = () => {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm bg-opacity-50 flex items-center justify-center p-4 m-0 z-50">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-xs bg-opacity-50 flex items-center justify-center p-4 m-0 z-50">
           <div className="w-full max-w-2xl">
             <AppVersionForm
               onSubmit={editingVersion ? handleUpdate : handleCreate}
@@ -186,7 +186,7 @@ export const VersionsPage = () => {
 
       {/* Selected Version Details */}
       {selectedVersion && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-xs bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Version Details</h2>
