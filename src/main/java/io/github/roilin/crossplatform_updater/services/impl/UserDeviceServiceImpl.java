@@ -33,13 +33,15 @@ public class UserDeviceServiceImpl implements UserDeviceService {
 
   @Override
   public List<UserDeviceResponse> getAllByUsername(String username) {
-    User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+    User user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
     return userDeviceRepository.findAllByUser(user).stream().map(this::toDto).collect(Collectors.toList());
   }
 
   @Override
   public UserDeviceResponse getById(Long id) {
-    return toDto(userDeviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Device", "id", id.toString())));
+    return toDto(userDeviceRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Device", "id", id.toString())));
   }
 
   @Override
@@ -79,6 +81,7 @@ public class UserDeviceServiceImpl implements UserDeviceService {
 
   private UserDeviceResponse toDto(UserDevice entity) {
     return new UserDeviceResponse(
+        entity.getId(),
         entity.getName(),
         entity.getPlatform(),
         entity.getUser().getUsername(),
