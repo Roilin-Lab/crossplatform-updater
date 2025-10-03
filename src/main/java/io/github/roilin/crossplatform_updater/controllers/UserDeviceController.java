@@ -49,6 +49,7 @@ public class UserDeviceController {
 
   @DeleteMapping("devices/{id}")
   public ResponseEntity<String> deleteDevice(@PathVariable Long id) {
+    userDeviceService.deleteById(id);
     return ResponseEntity.status(HttpStatus.OK).body("Device deleted successfully.");
   }
 }
