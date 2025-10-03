@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import io.github.roilin.crossplatform_updater.dto.UserDeviceRequest;
 import io.github.roilin.crossplatform_updater.dto.UserDeviceResponse;
+import io.github.roilin.crossplatform_updater.exception.ResourceNotFoundException;
 import io.github.roilin.crossplatform_updater.models.AppVersion;
 import io.github.roilin.crossplatform_updater.models.UserDevice;
 import io.github.roilin.crossplatform_updater.models.user.User;
@@ -32,13 +33,13 @@ public class UserDeviceServiceImpl implements UserDeviceService {
 
   @Override
   public List<UserDeviceResponse> getAllByUsername(String username) {
-    User user = userRepository.findByUsername(username).orElseThrow();
+    User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
     return userDeviceRepository.findAllByUser(user).stream().map(this::toDto).collect(Collectors.toList());
   }
 
   @Override
   public UserDeviceResponse getById(Long id) {
-    return toDto(userDeviceRepository.findById(id).orElse(null));
+    return toDto(userDeviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Device", "id", id.toString())));
   }
 
   @Override

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import io.github.roilin.crossplatform_updater.dto.AppVersionRequest;
 import io.github.roilin.crossplatform_updater.dto.AppVersionResponse;
+import io.github.roilin.crossplatform_updater.exception.ResourceNotFoundException;
 import io.github.roilin.crossplatform_updater.models.AppVersion;
 import io.github.roilin.crossplatform_updater.models.enums.Platform;
 import io.github.roilin.crossplatform_updater.repositories.AppVersionRepository;
@@ -33,7 +34,7 @@ public class AppVersionServiceImpl implements AppVersionService {
 
   @Override
   public AppVersionResponse getById(Integer id) {
-    return toDto(appVersionRepository.findById(id).orElse(null));
+    return toDto(appVersionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("App version", "id", id.toString())));
   }
 
   @Override
@@ -53,7 +54,7 @@ public class AppVersionServiceImpl implements AppVersionService {
 
   @Override
   public AppVersionResponse update(AppVersionRequest version, Integer id) {
-    AppVersion updatedVersion = appVersionRepository.findById(id).orElse(null);
+    AppVersion updatedVersion = appVersionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("App version", "id", id.toString()));
     updatedVersion.setVersion(version.getVersion());
     updatedVersion.setChangeLog(version.getChangeLog());
     updatedVersion.setReleaseDate(version.getReleaseDate());
@@ -78,7 +79,7 @@ public class AppVersionServiceImpl implements AppVersionService {
         version.isActive(),
         version.getUpdateType());
   }
-  
+
   private AppVersion toEntity(AppVersionRequest dto) {
     AppVersion entity = new AppVersion();
     entity.setVersion(dto.getVersion());
