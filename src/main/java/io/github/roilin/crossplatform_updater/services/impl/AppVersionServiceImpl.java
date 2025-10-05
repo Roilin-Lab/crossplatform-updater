@@ -1,8 +1,11 @@
 package io.github.roilin.crossplatform_updater.services.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import io.github.roilin.crossplatform_updater.dto.AppVersionRequest;
@@ -12,6 +15,7 @@ import io.github.roilin.crossplatform_updater.models.AppVersion;
 import io.github.roilin.crossplatform_updater.models.enums.Platform;
 import io.github.roilin.crossplatform_updater.repositories.AppVersionRepository;
 import io.github.roilin.crossplatform_updater.services.AppVersionService;
+import io.github.roilin.crossplatform_updater.specifications.AppVersionSpecifications;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -62,6 +66,11 @@ public class AppVersionServiceImpl implements AppVersionService {
     updatedVersion.setPlatform(version.getPlatform());
     updatedVersion.setActive(version.isActive());
     return toDto(appVersionRepository.save(updatedVersion));
+  }
+
+  @Override
+  public Page<AppVersionResponse> getByRangeDate(LocalDateTime max, LocalDateTime min, Pageable pageable) {
+    return appVersionRepository.findAll(AppVersionSpecifications.rangeDate(max, min), pageable).map(this::toDto);
   }
 
   @Override
