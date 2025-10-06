@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.data.jpa.domain.Specification;
 
 import io.github.roilin.crossplatform_updater.models.AppVersion;
+import io.github.roilin.crossplatform_updater.models.enums.Platform;
 
 public class AppVersionSpecifications {
     private static Specification<AppVersion> changeLogLike(String changeLog) {
@@ -35,7 +36,20 @@ public class AppVersionSpecifications {
         };
     }
 
+    private static Specification<AppVersion> platformEqualse(Platform platform) {
+        return (root, query, criteriaBuilder) -> {
+            if (platform == null) {
+                return null;
+            }
+            return criteriaBuilder.equal(root.get("platform"), platform);
+        };
+    }
+
     public static Specification<AppVersion> rangeDate(LocalDateTime max, LocalDateTime min) {
         return Specification.allOf(releaseDateGreater(min), releaseDateLower(max));
+    }
+
+    public static Specification<AppVersion> filterByPlatform(Platform platform) {
+        return Specification.allOf(platformEqualse(platform));
     }
 }

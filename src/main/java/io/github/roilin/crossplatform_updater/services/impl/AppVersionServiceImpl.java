@@ -26,19 +26,15 @@ public class AppVersionServiceImpl implements AppVersionService {
 
   @Override
   public List<AppVersionResponse> getAll(Platform platform) {
-    if (platform == null) {
-      return appVersionRepository.findAll()
-          .stream().map(this::toDto)
-          .collect(Collectors.toList());
-    }
-    return appVersionRepository.findAllByPlatform(platform)
+    return appVersionRepository.findAll(AppVersionSpecifications.filterByPlatform(platform))
         .stream().map(this::toDto)
         .collect(Collectors.toList());
   }
 
   @Override
   public AppVersionResponse getById(Integer id) {
-    return toDto(appVersionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("App version", "id", id.toString())));
+    return toDto(appVersionRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("App version", "id", id.toString())));
   }
 
   @Override
@@ -58,7 +54,8 @@ public class AppVersionServiceImpl implements AppVersionService {
 
   @Override
   public AppVersionResponse update(AppVersionRequest version, Integer id) {
-    AppVersion updatedVersion = appVersionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("App version", "id", id.toString()));
+    AppVersion updatedVersion = appVersionRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("App version", "id", id.toString()));
     updatedVersion.setVersion(version.getVersion());
     updatedVersion.setChangeLog(version.getChangeLog());
     updatedVersion.setReleaseDate(version.getReleaseDate());
