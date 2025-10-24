@@ -22,8 +22,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private JwtTokenProvider tokenProvider;
-    private UserDetailsService userDetailsService;
+    private final JwtTokenProvider tokenProvider;
+    private final UserDetailsService userDetailsService;
 
     @Value("${jwt.access.cookieName}")
     private String accessTokenName;
