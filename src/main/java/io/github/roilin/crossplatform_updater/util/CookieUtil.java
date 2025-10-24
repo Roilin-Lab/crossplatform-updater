@@ -26,13 +26,13 @@ public class CookieUtil {
                 .sameSite("None").build();
     }
 
-    public HttpCookie deleteAccessCookie(String value, long duration) {
+    public HttpCookie deleteAccessCookie() {
         return ResponseCookie.from(accessTokenCookieName, "")
                 .maxAge(0).httpOnly(true).path("/")
                 .sameSite("None").build();
     }
 
-    public HttpCookie deleteRefreshCookie(String value, long duration) {
+    public HttpCookie deleteRefreshCookie() {
         return ResponseCookie.from(refreshTokenCookieName, "")
                 .maxAge(0).httpOnly(true).path("/")
                 .sameSite("None").build();
