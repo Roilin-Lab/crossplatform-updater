@@ -26,7 +26,7 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class JwtTokenProvider {
-    TokenRepository tokenRepository;
+    private final TokenRepository tokenRepository;
 
     @Value("${jwt.secret}")
     private final String key;

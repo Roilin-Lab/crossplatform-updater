@@ -18,17 +18,24 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
 
     @Override
-    public UserDto getUser(Long id) {
+    public UserDto getUserDto(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id.toString()));
         return UserMapper.toDto(user);
     }
 
     @Override
-    public UserDto getUser(String username) {
+    public UserDto getUserDto(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
         return UserMapper.toDto(user);
+    }
+
+    @Override
+    public User getUser(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+        return user;
     }
 
     @Override

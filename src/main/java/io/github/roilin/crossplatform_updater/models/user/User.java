@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import io.github.roilin.crossplatform_updater.models.Token;
 import io.github.roilin.crossplatform_updater.models.UserDevice;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -51,6 +52,9 @@ public class User implements UserDetails {
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JsonIgnore
   private Set<UserDevice> devices = new HashSet<>();
+
+  @OneToMany(mappedBy="user")
+  private Set<Token> tokens;
 
   @ManyToOne
   private Role role;
