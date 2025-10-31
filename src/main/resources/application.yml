@@ -15,7 +15,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
 jwt: 
-  secret: gggggggggggggggggggggggggggggggg
+  secret: ${JWT_SECRET_KEY}
   access:
     duration:
       minutes: 5
