@@ -21,15 +21,15 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class JwtTokenProvider {
     private final TokenRepository tokenRepository;
 
     @Value("${jwt.secret}")
-    private final String key;
+    private String key;
 
     public String getUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -64,7 +64,7 @@ public class JwtTokenProvider {
         if (token == null)
             return false;
         try {
-            Jwts.parserBuilder().setSigningKey(decodeSecretKey(key)).build().parseClaimsJwt(token);
+            Jwts.parserBuilder().setSigningKey(decodeSecretKey(key)).build().parseClaimsJws(token);
             return !isDisable(token);
         } catch (JwtException e) {
             return false;
@@ -87,7 +87,7 @@ public class JwtTokenProvider {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(decodeSecretKey(key)).build().parseClaimsJwt(token).getBody();
+        return Jwts.parserBuilder().setSigningKey(decodeSecretKey(key)).build().parseClaimsJws(token).getBody();
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
