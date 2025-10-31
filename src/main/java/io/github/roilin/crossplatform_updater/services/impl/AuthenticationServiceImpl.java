@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import io.github.roilin.crossplatform_updater.dto.LoginRequest;
@@ -26,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationServiceImpl {
+public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final TokenRepository tokenRepository;
@@ -65,26 +66,36 @@ public class AuthenticationServiceImpl {
         });
     }
 
-    // public ResponseEntity<LoginResponse> login(LoginRequest loginRequest, String access, String refresh) {
-    //     Authentication authentication = authenticationManager
-    //             .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password()));
-    //     User user = userService.getUser(loginRequest.username());
-    //     boolean accessValid = jwtTokenProvider.isValid(access);
-    //     boolean refreshValid = jwtTokenProvider.isValid(refresh);
-    //     HttpHeaders headers = new HttpHeaders();
-    //     revokeAllTokens(user);
-    //     if (!accessValid) {
-    //         Token newAccess = jwtTokenProvider.generatedAccessToken(Map.of("role", user.getRole().getAuthority()),
-    //                 accessDurationMinute, ChronoUnit.MINUTES, user);
-    //         newAccess.setUser(user);
-    //         addAccessTokenCookie(headers, newAccess);
-    //         tokenRepository.save(newAccess);
-    //     }
-    //     if (!refreshValid) {
-    //         Token newRefresh = jwtTokenProvider.generatedRefreshToken(refreshDurationDays, ChronoUnit.DAYS, user);
-    //         newRefresh.setUser(user);
-    //         addRefreshTokenCookie(headers, newRefresh);
-    //         tokenRepository.save(newRefresh);
-    //     }
-    // }
+    public ResponseEntity<LoginResponse> login(LoginRequest loginRequest, String access, String refresh) {
+        Authentication authentication = authenticationManager
+                .authenticate(
+                        new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password()));
+        User user = userService.getUser(loginRequest.username());
+
+        boolean accessValid = jwtTokenProvider.isValid(access);
+        boolean refreshValid = jwtTokenProvider.isValid(refresh);
+
+        HttpHeaders headers = new HttpHeaders();
+        Token newAccess, newRefresh;
+
+        revokeAllTokens(user);
+
+        if (!accessValid) {
+            newAccess = jwtTokenProvider.generatedAccessToken(Map.of("role", user.getRole().getAuthority()),
+                    accessDurationMinute, ChronoUnit.MINUTES, user);
+            newAccess.setUser(user);
+            addAccessTokenCookie(headers, newAccess);
+            tokenRepository.save(newAccess);
+        }
+        if (!refreshValid) {
+            newRefresh = jwtTokenProvider.generatedRefreshToken(refreshDurationDays, ChronoUnit.DAYS, user);
+            newRefresh.setUser(user);
+            addRefreshTokenCookie(headers, newRefresh);
+            tokenRepository.save(newRefresh);
+        }
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        LoginResponse loginResponse = new LoginResponse(true, user.getUsername(), user.getRole().getName());
+        return ResponseEntity.ok().headers(headers).body(loginResponse);
+    }
 }
