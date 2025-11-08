@@ -42,4 +42,14 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getUsers() {
         return userRepository.findAll().stream().map(UserMapper::toDto).toList();
     }
+
+    @Override
+    public User changePassword(String username, String newPassword) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+
+        user.setPassword(newPassword);
+        userRepository.save(user);
+        return user;
+    }
 }
