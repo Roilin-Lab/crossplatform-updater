@@ -10,12 +10,12 @@ import io.github.roilin.crossplatform_updater.mapper.UserMapper;
 import io.github.roilin.crossplatform_updater.models.user.User;
 import io.github.roilin.crossplatform_updater.repositories.UserRepository;
 import io.github.roilin.crossplatform_updater.services.UserService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     public UserDto getUserDto(Long id) {
