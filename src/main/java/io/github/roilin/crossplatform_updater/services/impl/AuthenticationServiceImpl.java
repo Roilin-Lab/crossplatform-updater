@@ -112,8 +112,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = userService.getUser(jwtTokenProvider.getUsername(refresh));
         Token newAccess = jwtTokenProvider.generatedAccessToken(Map.of("role", user.getRole().getAuthority()),
                 accessDurationMinute, ChronoUnit.MINUTES, user);
+        newAccess.setUser(user);
         HttpHeaders headers = new HttpHeaders();
         addAccessTokenCookie(headers, newAccess);
+        tokenRepository.save(newAccess);
 
         LoginResponse loginResponse = new LoginResponse(true, user.getUsername(), user.getRole().getName());
         return ResponseEntity.ok().headers(headers).body(loginResponse);
@@ -132,6 +134,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return ResponseEntity.ok().headers(headers).body(loginResponse);
     }
 
+    @Override
     public UserLoggedDto info() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
