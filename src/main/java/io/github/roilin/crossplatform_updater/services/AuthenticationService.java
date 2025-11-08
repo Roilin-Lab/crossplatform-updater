@@ -1,10 +1,14 @@
-package io.github.roilin.crossplatform_updater.services.impl;
+package io.github.roilin.crossplatform_updater.services;
 
 import org.springframework.http.ResponseEntity;
 
 import io.github.roilin.crossplatform_updater.dto.LoginRequest;
 import io.github.roilin.crossplatform_updater.dto.LoginResponse;
+import io.github.roilin.crossplatform_updater.dto.UserLoggedDto;
 
 public interface AuthenticationService {
   ResponseEntity<LoginResponse> login(LoginRequest loginRequest, String access, String refresh);
+  ResponseEntity<LoginResponse> refresh(String refresh);
+  ResponseEntity<LoginResponse> logout(String access, String refresh);
+  UserLoggedDto info();
 }
