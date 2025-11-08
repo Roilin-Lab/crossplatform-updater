@@ -30,6 +30,8 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
 
+    private final String[] ALLOWED_URLS = { "/swagger-ui/**", "/v3/api-docs/**", "/api/auth/login", "/api/auth/refresh" };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
@@ -43,20 +45,12 @@ public class SecurityConfig {
             return configuration;
         }));
         http.authorizeHttpRequests(authorize -> {
-            authorize.requestMatchers("/swagger-ui/**").permitAll();
-            authorize.requestMatchers("/v3/api-docs/**").permitAll();
-            authorize.requestMatchers("/api/auth/login", "/login").permitAll();
+            authorize.requestMatchers(ALLOWED_URLS).permitAll();
             // authorize.anyRequest().permitAll();
             authorize.anyRequest().authenticated();
         });
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthEntryPoint));
-        http
-                .formLogin(form -> form
-                        .permitAll())
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .permitAll());
         http
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
