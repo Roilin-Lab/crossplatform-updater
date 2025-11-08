@@ -13,17 +13,19 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import io.github.roilin.crossplatform_updater.dto.ChangePasswordRequest;
 import io.github.roilin.crossplatform_updater.dto.LoginRequest;
 import io.github.roilin.crossplatform_updater.dto.LoginResponse;
 import io.github.roilin.crossplatform_updater.dto.UserLoggedDto;
+import io.github.roilin.crossplatform_updater.exception.UserBadRequestException;
 import io.github.roilin.crossplatform_updater.jwt.JwtTokenProvider;
 import io.github.roilin.crossplatform_updater.mapper.UserMapper;
 import io.github.roilin.crossplatform_updater.models.Token;
 import io.github.roilin.crossplatform_updater.models.user.User;
 import io.github.roilin.crossplatform_updater.repositories.TokenRepository;
-import io.github.roilin.crossplatform_updater.repositories.UserRepository;
 import io.github.roilin.crossplatform_updater.services.AuthenticationService;
 import io.github.roilin.crossplatform_updater.services.UserService;
 import io.github.roilin.crossplatform_updater.util.CookieUtil;
@@ -37,6 +39,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtTokenProvider jwtTokenProvider;
     private final CookieUtil cookieUtil;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${jwt.access.duration.minutes}")
     private long accessDurationMinute;
@@ -143,5 +146,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = userService.getUser(auth.getName());
 
         return UserMapper.toUserLoggedDto(user);
+    }
+
+    @Override
+    public ResponseEntity<LoginResponse> changePassword(ChangePasswordRequest changePasswordRequest, String access,
+            String refresh) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.getUser(auth.getName());
+
+        if (!passwordEncoder.matches(changePasswordRequest.oldPassword(), user.getPassword())) {
+            throw new UserBadRequestException("Incorrectly entered old password");
+        }
+        if (!changePasswordRequest.newPassword().equals(changePasswordRequest.repeatedNew())) {
+            throw new RuntimeException("The new passwords entered do not match");
+        }
+        if (changePasswordRequest.oldPassword().equals(changePasswordRequest.newPassword())) {
+            throw new RuntimeException("The new password is the same as the old password");
+        }
+
+        userService.changePassword(auth.getName(), passwordEncoder.encode(changePasswordRequest.newPassword()));
+        return logout(access, refresh);
     }
 }
