@@ -8,6 +8,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,11 +17,14 @@ import org.springframework.stereotype.Service;
 
 import io.github.roilin.crossplatform_updater.dto.LoginRequest;
 import io.github.roilin.crossplatform_updater.dto.LoginResponse;
+import io.github.roilin.crossplatform_updater.dto.UserLoggedDto;
 import io.github.roilin.crossplatform_updater.jwt.JwtTokenProvider;
+import io.github.roilin.crossplatform_updater.mapper.UserMapper;
 import io.github.roilin.crossplatform_updater.models.Token;
 import io.github.roilin.crossplatform_updater.models.user.User;
 import io.github.roilin.crossplatform_updater.repositories.TokenRepository;
 import io.github.roilin.crossplatform_updater.repositories.UserRepository;
+import io.github.roilin.crossplatform_updater.services.AuthenticationService;
 import io.github.roilin.crossplatform_updater.services.UserService;
 import io.github.roilin.crossplatform_updater.util.CookieUtil;
 import lombok.RequiredArgsConstructor;
@@ -66,6 +70,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         });
     }
 
+    @Override
     public ResponseEntity<LoginResponse> login(LoginRequest loginRequest, String access, String refresh) {
         Authentication authentication = authenticationManager
                 .authenticate(
@@ -87,7 +92,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             addAccessTokenCookie(headers, newAccess);
             tokenRepository.save(newAccess);
         }
-        if (!refreshValid) {
+        if (!refreshValid || accessValid) {
             newRefresh = jwtTokenProvider.generatedRefreshToken(refreshDurationDays, ChronoUnit.DAYS, user);
             newRefresh.setUser(user);
             addRefreshTokenCookie(headers, newRefresh);
@@ -97,5 +102,44 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         LoginResponse loginResponse = new LoginResponse(true, user.getUsername(), user.getRole().getName());
         return ResponseEntity.ok().headers(headers).body(loginResponse);
+    }
+
+    @Override
+    public ResponseEntity<LoginResponse> refresh(String refresh) {
+        if (!jwtTokenProvider.isValid(refresh)) {
+            throw new RuntimeException("Token is invalid");
+        }
+        User user = userService.getUser(jwtTokenProvider.getUsername(refresh));
+        Token newAccess = jwtTokenProvider.generatedAccessToken(Map.of("role", user.getRole().getAuthority()),
+                accessDurationMinute, ChronoUnit.MINUTES, user);
+        HttpHeaders headers = new HttpHeaders();
+        addAccessTokenCookie(headers, newAccess);
+
+        LoginResponse loginResponse = new LoginResponse(true, user.getUsername(), user.getRole().getName());
+        return ResponseEntity.ok().headers(headers).body(loginResponse);
+    }
+
+    @Override
+    public ResponseEntity<LoginResponse> logout(String access, String refresh) {
+        SecurityContextHolder.clearContext();
+        User user = userService.getUser(jwtTokenProvider.getUsername(access));
+        revokeAllTokens(user);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, cookieUtil.deleteAccessCookie().toString());
+        headers.add(HttpHeaders.SET_COOKIE, cookieUtil.deleteRefreshCookie().toString());
+
+        LoginResponse loginResponse = new LoginResponse(false, null, null);
+        return ResponseEntity.ok().headers(headers).body(loginResponse);
+    }
+
+    public UserLoggedDto info() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth instanceof AnonymousAuthenticationToken) {
+            throw new RuntimeException("No user");
+        }
+        User user = userService.getUser(auth.getName());
+
+        return UserMapper.toUserLoggedDto(user);
     }
 }
