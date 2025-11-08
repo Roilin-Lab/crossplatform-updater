@@ -4,11 +4,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.github.roilin.crossplatform_updater.dto.ChangePasswordRequest;
 import io.github.roilin.crossplatform_updater.dto.LoginRequest;
 import io.github.roilin.crossplatform_updater.dto.LoginResponse;
 import io.github.roilin.crossplatform_updater.dto.UserLoggedDto;
@@ -27,6 +29,14 @@ public class AuthController {
       @CookieValue(name = "refresh-token", required = false) String refreshToken,
       @RequestBody LoginRequest loginRequest) {
     return authenticationService.login(loginRequest, accessToken, refreshToken);
+  }
+
+  @PatchMapping("/password/change")
+  public ResponseEntity<LoginResponse> changePassword(
+      @CookieValue(name = "access-token", required = false) String accessToken,
+      @CookieValue(name = "refresh-token", required = false) String refreshToken,
+      @RequestBody ChangePasswordRequest changePasswordRequest) {
+    return authenticationService.changePassword(changePasswordRequest, accessToken, refreshToken);
   }
 
   @PostMapping("/refresh")
