@@ -16,13 +16,13 @@ public class CookieUtil {
 
     public HttpCookie createAccessCookie(String value, long duration) {
         return ResponseCookie.from(accessTokenCookieName, value)
-                .maxAge(duration).httpOnly(true).path("/")
+                .maxAge(duration).httpOnly(true).path("/").secure(true)
                 .sameSite("None").build();
     }
 
     public HttpCookie createRefreshCookie(String value, long duration) {
         return ResponseCookie.from(refreshTokenCookieName, value)
-                .maxAge(duration).httpOnly(true).path("/")
+                .maxAge(duration).httpOnly(true).path("/").secure(true)
                 .sameSite("None").build();
     }
 
