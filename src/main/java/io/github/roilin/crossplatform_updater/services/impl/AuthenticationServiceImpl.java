@@ -32,7 +32,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
-    private final UserRepository userRepository;
     private final UserService userService;
     private final TokenRepository tokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
