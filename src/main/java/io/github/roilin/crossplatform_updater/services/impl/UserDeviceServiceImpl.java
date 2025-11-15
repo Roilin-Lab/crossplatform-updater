@@ -15,6 +15,7 @@ import io.github.roilin.crossplatform_updater.models.user.User;
 import io.github.roilin.crossplatform_updater.repositories.AppVersionRepository;
 import io.github.roilin.crossplatform_updater.repositories.UserDeviceRepository;
 import io.github.roilin.crossplatform_updater.repositories.UserRepository;
+import io.github.roilin.crossplatform_updater.services.AuthenticationService;
 import io.github.roilin.crossplatform_updater.services.UserDeviceService;
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +26,7 @@ public class UserDeviceServiceImpl implements UserDeviceService {
   private final UserDeviceRepository userDeviceRepository;
   private final UserRepository userRepository;
   private final AppVersionRepository appVersionRepository;
+  private final AuthenticationService authService;
 
   @Override
   public List<UserDeviceResponse> getAllByUser(User user) {
@@ -44,7 +46,7 @@ public class UserDeviceServiceImpl implements UserDeviceService {
 
   @Override
   public UserDeviceResponse create(UserDeviceRequest deviceDto) {
-    User user = userRepository.findByUsername(deviceDto.getOwnerUsername()).orElseThrow();
+    User user = authService.getAuthenticatedUser();
 
     AppVersion version = appVersionRepository
         .findFirstByPlatformAndIsActiveTrueOrderByReleaseDateDesc(deviceDto.getPlatform());
@@ -59,7 +61,7 @@ public class UserDeviceServiceImpl implements UserDeviceService {
   public UserDeviceResponse update(UserDeviceRequest deviceDto, Long id) {
     UserDevice device = userDeviceRepository.findById(id).orElse(null);
 
-    User user = userRepository.findByUsername(deviceDto.getOwnerUsername()).orElseThrow();
+    User user = authService.getAuthenticatedUser();
 
     AppVersion version = appVersionRepository
         .findFirstByPlatformAndIsActiveTrueOrderByReleaseDateDesc(deviceDto.getPlatform());
