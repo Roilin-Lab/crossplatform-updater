@@ -6,6 +6,7 @@ import io.github.roilin.crossplatform_updater.dto.ChangePasswordRequest;
 import io.github.roilin.crossplatform_updater.dto.LoginRequest;
 import io.github.roilin.crossplatform_updater.dto.LoginResponse;
 import io.github.roilin.crossplatform_updater.dto.UserLoggedDto;
+import io.github.roilin.crossplatform_updater.models.user.User;
 
 public interface AuthenticationService {
   ResponseEntity<LoginResponse> login(LoginRequest loginRequest, String access, String refresh);
@@ -13,4 +14,5 @@ public interface AuthenticationService {
   ResponseEntity<LoginResponse> logout(String access, String refresh);
   ResponseEntity<LoginResponse> changePassword(ChangePasswordRequest changePasswordRequest, String access, String refresh);
   UserLoggedDto info();
+  User getAuthenticatedUser();
 }

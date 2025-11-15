@@ -138,14 +138,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public UserLoggedDto info() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = getAuthenticatedUser();
 
+        return UserMapper.toUserLoggedDto(user);
+    }
+
+    @Override
+    public User getAuthenticatedUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        
         if (auth instanceof AnonymousAuthenticationToken) {
             throw new RuntimeException("No user");
         }
-        User user = userService.getUser(auth.getName());
-
-        return UserMapper.toUserLoggedDto(user);
+        
+        return userService.getUser(auth.getName());
     }
 
     @Override
