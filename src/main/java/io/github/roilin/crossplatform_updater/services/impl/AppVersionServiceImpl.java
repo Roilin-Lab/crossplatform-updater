@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import io.github.roilin.crossplatform_updater.dto.AppVersionRequest;
 import io.github.roilin.crossplatform_updater.dto.AppVersionResponse;
 import io.github.roilin.crossplatform_updater.exception.ResourceNotFoundException;
+import io.github.roilin.crossplatform_updater.mapper.AppVersionMapper;
 import io.github.roilin.crossplatform_updater.models.AppVersion;
 import io.github.roilin.crossplatform_updater.models.enums.Platform;
 import io.github.roilin.crossplatform_updater.repositories.AppVersionRepository;
@@ -27,29 +28,29 @@ public class AppVersionServiceImpl implements AppVersionService {
   @Override
   public List<AppVersionResponse> getAll(Platform platform) {
     return appVersionRepository.findAll(AppVersionSpecifications.filterByPlatform(platform))
-        .stream().map(this::toDto)
+        .stream().map(AppVersionMapper::toResponseDto)
         .collect(Collectors.toList());
   }
 
   @Override
   public AppVersionResponse getById(Integer id) {
-    return toDto(appVersionRepository.findById(id)
+    return AppVersionMapper.toResponseDto(appVersionRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("App version", "id", id.toString())));
   }
 
   @Override
   public AppVersionResponse getLatesByPlatform(Platform platform) {
-    return toDto(appVersionRepository.findFirstByPlatformAndIsActiveTrueOrderByReleaseDateDesc(platform));
+    return AppVersionMapper.toResponseDto(appVersionRepository.findFirstByPlatformAndIsActiveTrueOrderByReleaseDateDesc(platform));
   }
 
   @Override
   public AppVersionResponse getByVersionAndPlatform(String version, Platform platform) {
-    return toDto(appVersionRepository.findByVersionAndPlatform(version, platform));
+    return AppVersionMapper.toResponseDto(appVersionRepository.findByVersionAndPlatform(version, platform));
   }
 
   @Override
   public AppVersionResponse create(AppVersionRequest appVersion) {
-    return toDto(appVersionRepository.save(toEntity(appVersion)));
+    return AppVersionMapper.toResponseDto(appVersionRepository.save(AppVersionMapper.toEntity(appVersion)));
   }
 
   @Override
@@ -62,38 +63,16 @@ public class AppVersionServiceImpl implements AppVersionService {
     updatedVersion.setUpdateType(version.getUpdateType());
     updatedVersion.setPlatform(version.getPlatform());
     updatedVersion.setActive(version.isActive());
-    return toDto(appVersionRepository.save(updatedVersion));
+    return AppVersionMapper.toResponseDto(appVersionRepository.save(updatedVersion));
   }
 
   @Override
   public Page<AppVersionResponse> getByRangeDate(LocalDateTime max, LocalDateTime min, Pageable pageable) {
-    return appVersionRepository.findAll(AppVersionSpecifications.rangeDate(max, min), pageable).map(this::toDto);
+    return appVersionRepository.findAll(AppVersionSpecifications.rangeDate(max, min), pageable).map(AppVersionMapper::toResponseDto);
   }
 
   @Override
   public void deleteById(Integer id) {
     appVersionRepository.deleteById(id);
-  }
-
-  private AppVersionResponse toDto(AppVersion version) {
-    return new AppVersionResponse(
-        version.getId(),
-        version.getVersion(),
-        version.getPlatform(),
-        version.getReleaseDate(),
-        version.getChangeLog(),
-        version.isActive(),
-        version.getUpdateType());
-  }
-
-  private AppVersion toEntity(AppVersionRequest dto) {
-    AppVersion entity = new AppVersion();
-    entity.setVersion(dto.getVersion());
-    entity.setChangeLog(dto.getChangeLog());
-    entity.setReleaseDate(dto.getReleaseDate());
-    entity.setUpdateType(dto.getUpdateType());
-    entity.setPlatform(dto.getPlatform());
-    entity.setActive(dto.isActive());
-    return entity;
   }
 }
