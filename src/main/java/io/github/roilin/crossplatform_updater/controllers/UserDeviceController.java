@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.github.roilin.crossplatform_updater.dto.UserDeviceRequest;
 import io.github.roilin.crossplatform_updater.dto.UserDeviceResponse;
-import io.github.roilin.crossplatform_updater.models.UserDevice;
 import io.github.roilin.crossplatform_updater.services.UserDeviceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
