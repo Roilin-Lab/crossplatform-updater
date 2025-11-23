@@ -18,7 +18,8 @@ public class ApplicationMapper {
         app.getDeveloper(),
         app.getPublisher(),
         app.getLastUpdate(),
-        app.getReleaseDate());
+        app.getReleaseDate(),
+        app.getVersions().stream().map(AppVersionMapper::toDto).collect(Collectors.toSet()));
   }
 
   public static ApplicationResponse toResponseDto(Application app) {
@@ -30,8 +31,7 @@ public class ApplicationMapper {
         app.getDeveloper(),
         app.getPublisher(),
         app.getLastUpdate(),
-        app.getReleaseDate(),
-        app.getVersions().stream().map(AppVersionMapper::toDto).collect(Collectors.toSet()));
+        app.getReleaseDate());
   }
 
   public static Application toEntity(ApplicationRequest req) {

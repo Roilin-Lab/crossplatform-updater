@@ -12,7 +12,7 @@ public class AppVersionMapper {
         ver.getVersion(),
         ver.getPlatform(),
         ver.getReleaseDate(),
-        ApplicationMapper.toDto(ver.getApplication()),
+        ApplicationMapper.toResponseDto(ver.getApplication()),
         ver.getChangeLog(),
         ver.isActive(),
         ver.getUpdateType());
@@ -24,7 +24,7 @@ public class AppVersionMapper {
         ver.getVersion(),
         ver.getPlatform(),
         ver.getReleaseDate(),
-        ApplicationMapper.toDto(ver.getApplication()),
+        ApplicationMapper.toResponseDto(ver.getApplication()),
         ver.getChangeLog(),
         ver.isActive(),
         ver.getUpdateType());

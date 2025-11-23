@@ -11,7 +11,7 @@ public record AppVersionResponse(
     String version,
     Platform platform,
     LocalDateTime releaseDate,
-    ApplicationDto application,
+    ApplicationResponse application,
     String changeLog,
     boolean isActive,
     UpdateType updateType) implements Serializable {}

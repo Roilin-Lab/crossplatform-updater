@@ -15,5 +15,4 @@ public record ApplicationResponse(
     String developer,
     String publisher,
     LocalDateTime lastUpdate,
-    LocalDateTime releaseDate,
-    Set<AppVersionDto> versions) implements Serializable {}
+    LocalDateTime releaseDate) implements Serializable {}

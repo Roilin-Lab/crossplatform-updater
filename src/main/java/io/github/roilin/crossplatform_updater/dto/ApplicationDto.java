@@ -15,4 +15,5 @@ public record ApplicationDto(
     String developer,
     String publisher,
     LocalDateTime lastUpdate,
-    LocalDateTime releaseDate) implements Serializable {}
+    LocalDateTime releaseDate,
+    Set<AppVersionDto> versions) implements Serializable {}
