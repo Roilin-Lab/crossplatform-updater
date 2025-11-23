@@ -29,14 +29,16 @@ public class UserDeviceServiceImpl implements UserDeviceService {
   private final AuthenticationService authService;
 
   @Override
-  public List<UserDeviceResponse> getAllByUser(User user) {
-    return userDeviceRepository.findAllByUser(user).stream().map(this::toDto).collect(Collectors.toList());
+  public List<UserDeviceResponse> getAll() {
+    User user = authService.getAuthenticatedUser();
+    return userDeviceRepository.findAllByUser(user).stream().map(UserDeviceMapper::toResponseDto).collect(Collectors.toList());
   }
 
   @Override
   public List<UserDeviceResponse> getAllByUsername(String username) {
-    User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
-    return userDeviceRepository.findAllByUser(user).stream().map(this::toDto).collect(Collectors.toList());
+    User user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+    return userDeviceRepository.findAllByUser(user).stream().map(UserDeviceMapper::toResponseDto).collect(Collectors.toList());
   }
 
   @Override
