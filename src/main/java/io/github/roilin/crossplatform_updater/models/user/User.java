@@ -55,7 +55,7 @@ public class User implements UserDetails {
 
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JsonIgnore
-  private Set<UserDevice> devices = new HashSet<>();
+  private Set<UserDevice> devices;
 
   @OneToMany(mappedBy="user")
   private Set<Token> tokens;
