@@ -13,7 +13,4 @@ public class UserDeviceRequest {
   
   @NotEmpty
   private Platform platform;
-  
-  @NotEmpty
-  private String version;
 }
