@@ -11,19 +11,19 @@ import io.github.roilin.crossplatform_updater.dto.AppVersionResponse;
 import io.github.roilin.crossplatform_updater.models.enums.Platform;
 
 public interface AppVersionService {
-  List<AppVersionResponse> getAll(Platform platform);
+  List<AppVersionResponse> getAll(Long applicationId);
 
-  AppVersionResponse getById(Integer id);
+  AppVersionResponse getById(Long id);
 
-  AppVersionResponse getLatesByPlatform(Platform platform);
+  AppVersionResponse getLatest(Long applicationId);
 
   AppVersionResponse getByVersionAndPlatform(String version, Platform platform);
 
   AppVersionResponse create(AppVersionRequest version);
 
-  AppVersionResponse update(AppVersionRequest version, Integer id);
+  AppVersionResponse update(AppVersionRequest version, Long id);
 
-  void deleteById(Integer id);
+  void deleteById(Long id);
 
   Page<AppVersionResponse> getByRangeDate(LocalDateTime max, LocalDateTime min, Pageable pageable);
 }

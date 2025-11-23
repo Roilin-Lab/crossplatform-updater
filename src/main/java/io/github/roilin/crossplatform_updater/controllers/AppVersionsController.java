@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.github.roilin.crossplatform_updater.dto.AppVersionRequest;
 import io.github.roilin.crossplatform_updater.dto.AppVersionResponse;
-import io.github.roilin.crossplatform_updater.models.enums.Platform;
 import io.github.roilin.crossplatform_updater.services.AppVersionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -42,8 +41,8 @@ public class AppVersionsController {
       @ApiResponse(responseCode = "200", description = "Found the app versions") })
   @GetMapping("/versions")
   public Iterable<AppVersionResponse> allVersions(
-      @Parameter(description = "Platform to get the versions, not required") @RequestParam(required = false) Platform platform) {
-    return appVersionService.getAll(platform);
+      @Parameter(description = "Platform to get the versions, not required") @RequestParam() Long applicationId) {
+    return appVersionService.getAll(applicationId);
   }
 
   @Operation(summary = "Get app version by id")
@@ -53,7 +52,7 @@ public class AppVersionsController {
       @ApiResponse(responseCode = "404", description = "App version with that id was not found") })
   @GetMapping("/versions/{id}")
   public ResponseEntity<AppVersionResponse> getVersions(
-      @Parameter(description = "Id of app version to be searched") @PathVariable Integer id) {
+      @Parameter(description = "Id of app version to be searched") @PathVariable Long id) {
     return ResponseEntity.status(HttpStatus.OK).body(appVersionService.getById(id));
   }
 
@@ -63,10 +62,10 @@ public class AppVersionsController {
       @ApiResponse(responseCode = "200", description = "Found the app version") })
   @GetMapping("/versions/latest")
   public ResponseEntity<AppVersionResponse> getLatestVersion(
-      @Parameter(description = "Platform to get the latest version") @RequestParam Platform platform) {
+      @Parameter(description = "Platform to get the latest version") @RequestParam Long applicationId) {
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(this.appVersionService.getLatesByPlatform(platform));
+        .body(this.appVersionService.getLatest(applicationId));
   }
 
   @Operation(summary = "Get app version by release date range")
@@ -100,7 +99,7 @@ public class AppVersionsController {
       @ApiResponse(responseCode = "404", description = "App version with that id was not found") })
   @PutMapping("versions/{id}")
   public ResponseEntity<AppVersionResponse> updateVersion(
-      @Parameter(description = "Id of app version to be updated") @PathVariable Integer id,
+      @Parameter(description = "Id of app version to be updated") @PathVariable Long id,
       @RequestBody AppVersionRequest appVersion) {
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -114,7 +113,7 @@ public class AppVersionsController {
       @ApiResponse(responseCode = "404", description = "App version with that id was not found") })
   @DeleteMapping("versions/{id}")
   public ResponseEntity<String> deleteVersion(
-      @Parameter(description = "Id of app version to be deleted") @PathVariable Integer id) {
+      @Parameter(description = "Id of app version to be deleted") @PathVariable Long id) {
     appVersionService.deleteById(id);
     return ResponseEntity.status(HttpStatus.OK).body("App version deleted successfully.");
   }
