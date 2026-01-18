@@ -20,6 +20,13 @@ A modern REST API for managing cross-platform application updates, versions, and
 - **Auto-Documentation**: OpenAPI 3.1 compliant API documentation
 - **Containerized**: Full Docker support with PostgreSQL and pgAdmin
 
+## 📚 Database Schemas
+![conceptual diagram](doc/conceptual-diagram.jpg)
+---
+![logical diagram](doc/logical-diagram.jpg)
+---
+![physical diagram](doc/physical-diagram.jpg)
+
 ## 🛠️ Technologies
 
 | Category       | Technologies                                                                 |
