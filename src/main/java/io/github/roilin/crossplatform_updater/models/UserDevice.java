@@ -49,4 +49,8 @@ public class UserDevice {
   @JoinTable(name = "user_devices_app_versions", joinColumns = @JoinColumn(name = "user_device_id"), inverseJoinColumns = @JoinColumn(name = "app_versions_id"))
   @JsonIgnore
   private Set<AppVersion> installedApps = new HashSet<>();
+
+  public void addApplication(AppVersion appVersion) {
+    installedApps.add(appVersion);
+  }
 }

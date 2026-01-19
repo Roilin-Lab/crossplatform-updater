@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.github.roilin.crossplatform_updater.dto.AppInstallRequest;
+import io.github.roilin.crossplatform_updater.dto.AppInstallResponse;
 import io.github.roilin.crossplatform_updater.dto.UserDeviceRequest;
 import io.github.roilin.crossplatform_updater.dto.UserDeviceResponse;
 import io.github.roilin.crossplatform_updater.services.UserDeviceService;
@@ -45,6 +47,13 @@ public class UserDeviceController {
       @PathVariable Long id,
       @RequestBody UserDeviceRequest entity) {
     return ResponseEntity.status(HttpStatus.OK).body(userDeviceService.update(entity, id));
+  }
+
+  @PutMapping("devices/{id}/install")
+  public ResponseEntity<AppInstallResponse> installApp(
+      @PathVariable Long id,
+      @RequestBody AppInstallRequest entity) {
+    return ResponseEntity.status(HttpStatus.OK).body(userDeviceService.installApp(entity, id));
   }
 
   @DeleteMapping("devices/{id}")
