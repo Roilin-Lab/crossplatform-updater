@@ -7,9 +7,13 @@ import org.springframework.data.domain.Pageable;
 
 import io.github.roilin.crossplatform_updater.dto.ApplicationRequest;
 import io.github.roilin.crossplatform_updater.dto.ApplicationResponse;
+import io.github.roilin.crossplatform_updater.models.Application;
 import io.github.roilin.crossplatform_updater.models.enums.ApplicationType;
+import io.github.roilin.crossplatform_updater.models.enums.Platform;
 
 public interface ApplicationService {
+  Application findById(Long id);
+
   ApplicationResponse getById(Long id);
   
   List<ApplicationResponse> getAll();
@@ -21,6 +25,8 @@ public interface ApplicationService {
   List<ApplicationResponse> getAllByType(ApplicationType type);
   
   Page<ApplicationResponse> getAllByFilter(String title, String publisher, String developer, ApplicationType type, Pageable pageable);
+
+  boolean isPlatformSupported(Long id, Platform platform);
 
   ApplicationResponse create(ApplicationRequest application);
 

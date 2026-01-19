@@ -13,6 +13,7 @@ import io.github.roilin.crossplatform_updater.exception.ResourceNotFoundExceptio
 import io.github.roilin.crossplatform_updater.mapper.ApplicationMapper;
 import io.github.roilin.crossplatform_updater.models.Application;
 import io.github.roilin.crossplatform_updater.models.enums.ApplicationType;
+import io.github.roilin.crossplatform_updater.models.enums.Platform;
 import io.github.roilin.crossplatform_updater.repositories.ApplicationRepository;
 import io.github.roilin.crossplatform_updater.services.ApplicationService;
 import io.github.roilin.crossplatform_updater.specifications.ApplicationSpecifications;
@@ -23,6 +24,11 @@ import lombok.RequiredArgsConstructor;
 public class ApplicationServiceImpl implements ApplicationService {
 
   private final ApplicationRepository applicationRepository;
+
+  @Override
+  public Application findById(Long id) {
+    return applicationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Application", "id", id.toString()));
+  }
 
   @Override
   public List<ApplicationResponse> getAll() {
@@ -46,13 +52,18 @@ public class ApplicationServiceImpl implements ApplicationService {
 
   @Override
   public ApplicationResponse getById(Long id) {
-    return ApplicationMapper.toResponseDto(applicationRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Application", "id", id.toString())));
+    return ApplicationMapper.toResponseDto(findById(id));
   }
 
   @Override
   public Page<ApplicationResponse> getAllByFilter(String title, String publisher, String developer, ApplicationType type, Pageable pageable) {
     return applicationRepository.findAll(ApplicationSpecifications.filter(title, publisher, developer, type), pageable).map(ApplicationMapper::toResponseDto);
+  }
+
+  @Override
+  public boolean isPlatformSupported(Long id, Platform platform) {
+    Application app = findById(id);
+    return app.getSupportedPlatform().contains(platform);
   }
 
   @Override
