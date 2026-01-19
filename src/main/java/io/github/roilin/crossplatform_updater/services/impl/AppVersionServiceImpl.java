@@ -16,8 +16,8 @@ import io.github.roilin.crossplatform_updater.models.AppVersion;
 import io.github.roilin.crossplatform_updater.models.Application;
 import io.github.roilin.crossplatform_updater.models.enums.Platform;
 import io.github.roilin.crossplatform_updater.repositories.AppVersionRepository;
-import io.github.roilin.crossplatform_updater.repositories.ApplicationRepository;
 import io.github.roilin.crossplatform_updater.services.AppVersionService;
+import io.github.roilin.crossplatform_updater.services.ApplicationService;
 import io.github.roilin.crossplatform_updater.specifications.AppVersionSpecifications;
 import lombok.RequiredArgsConstructor;
 
@@ -26,12 +26,11 @@ import lombok.RequiredArgsConstructor;
 public class AppVersionServiceImpl implements AppVersionService {
 
   private final AppVersionRepository appVersionRepository;
-  private final ApplicationRepository applicationRepository;
+  private final ApplicationService applicationService;
 
   @Override
   public List<AppVersionResponse> getAll(Long applicationId) {
-    Application app = applicationRepository.findById(applicationId)
-        .orElseThrow(() -> new ResourceNotFoundException("Application", "id", applicationId.toString()));
+    Application app = applicationService.findById(applicationId);
     return appVersionRepository.findAllByApplication(app)
         .stream().map(AppVersionMapper::toResponseDto)
         .collect(Collectors.toList());
@@ -44,11 +43,15 @@ public class AppVersionServiceImpl implements AppVersionService {
   }
 
   @Override
-  public AppVersionResponse getLatest(Long applicationId) {
-    Application app = applicationRepository.findById(applicationId)
-        .orElseThrow(() -> new ResourceNotFoundException("Application", "id", applicationId.toString()));
+  public AppVersion findLatest(Long applicationId, Platform platform) {
+    Application app = applicationService.findById(applicationId);
+    return appVersionRepository.findFirstByApplicationAndPlatformAndIsActiveTrueOrderByReleaseDateDesc(app, platform);
+  }
+
+  @Override
+  public AppVersionResponse getLatest(Long applicationId, Platform platform) {
     return AppVersionMapper
-        .toResponseDto(appVersionRepository.findFirstByApplicationAndIsActiveTrueOrderByReleaseDateDesc(app));
+        .toResponseDto(findLatest(applicationId, platform));
   }
 
   @Override

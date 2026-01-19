@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 import io.github.roilin.crossplatform_updater.dto.AppVersionRequest;
 import io.github.roilin.crossplatform_updater.dto.AppVersionResponse;
+import io.github.roilin.crossplatform_updater.models.AppVersion;
 import io.github.roilin.crossplatform_updater.models.enums.Platform;
 
 public interface AppVersionService {
@@ -15,7 +16,9 @@ public interface AppVersionService {
 
   AppVersionResponse getById(Long id);
 
-  AppVersionResponse getLatest(Long applicationId);
+  AppVersion findLatest(Long applicationId, Platform platform);
+
+  AppVersionResponse getLatest(Long applicationId, Platform platform);
 
   AppVersionResponse getByVersionAndPlatform(String version, Platform platform);
 

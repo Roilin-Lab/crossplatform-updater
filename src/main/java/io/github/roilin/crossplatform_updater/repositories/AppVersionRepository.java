@@ -16,5 +16,7 @@ public interface AppVersionRepository extends JpaRepository<AppVersion, Long>, J
 
   AppVersion findFirstByApplicationAndIsActiveTrueOrderByReleaseDateDesc(Application application);
 
+  AppVersion findFirstByApplicationAndPlatformAndIsActiveTrueOrderByReleaseDateDesc(Application application, Platform platform);
+
   AppVersion findByVersionAndPlatform(String version, Platform platform);
 }

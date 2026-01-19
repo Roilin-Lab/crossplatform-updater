@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.github.roilin.crossplatform_updater.dto.AppVersionRequest;
 import io.github.roilin.crossplatform_updater.dto.AppVersionResponse;
+import io.github.roilin.crossplatform_updater.models.enums.Platform;
 import io.github.roilin.crossplatform_updater.services.AppVersionService;
 import lombok.RequiredArgsConstructor;
 
@@ -39,10 +40,10 @@ public class AppVersionsController {
   }
 
   @GetMapping("/versions/latest")
-  public ResponseEntity<AppVersionResponse> getLatestVersion(@RequestParam Long applicationId) {
+  public ResponseEntity<AppVersionResponse> getLatestVersion(@RequestParam Long applicationId, @RequestParam Platform platform) {
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(this.appVersionService.getLatest(applicationId));
+        .body(this.appVersionService.getLatest(applicationId, platform));
   }
 
   @GetMapping("/versions/rangeDate")
