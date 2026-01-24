@@ -2,6 +2,7 @@ package io.github.roilin.crossplatform_updater.models;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,7 +25,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -52,5 +54,14 @@ public class UserDevice {
 
   public void addApplication(AppVersion appVersion) {
     installedApps.add(appVersion);
+  }
+
+  public void removeApplication(AppVersion appVersion) {
+    installedApps.removeAll(installedApps.stream()
+        .filter((app) -> app.getApplication().getId() == appVersion.getApplication().getId()).toList());
+  }
+
+  public Optional<AppVersion> getInstalledAppVersion(Long applicationId) {
+    return installedApps.stream().filter((app) -> app.getApplication().getId() == applicationId).findFirst();
   }
 }

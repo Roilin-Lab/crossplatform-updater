@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.github.roilin.crossplatform_updater.dto.AppInstallRequest;
 import io.github.roilin.crossplatform_updater.dto.AppInstallResponse;
+import io.github.roilin.crossplatform_updater.dto.CheckUpdatesResponse;
 import io.github.roilin.crossplatform_updater.dto.UserDeviceRequest;
 import io.github.roilin.crossplatform_updater.dto.UserDeviceResponse;
 import io.github.roilin.crossplatform_updater.services.UserDeviceService;
@@ -49,11 +51,30 @@ public class UserDeviceController {
     return ResponseEntity.status(HttpStatus.OK).body(userDeviceService.update(entity, id));
   }
 
-  @PutMapping("devices/{id}/install")
+  @PatchMapping("devices/{id}/apps/install")
   public ResponseEntity<AppInstallResponse> installApp(
       @PathVariable Long id,
       @RequestBody AppInstallRequest entity) {
     return ResponseEntity.status(HttpStatus.OK).body(userDeviceService.installApp(entity, id));
+  }
+
+  @PatchMapping("devices/{id}/apps/update")
+  public ResponseEntity<AppInstallResponse> updateApp(
+      @PathVariable Long id,
+      @RequestBody AppInstallRequest entity) {
+    return ResponseEntity.status(HttpStatus.OK).body(userDeviceService.updateApp(entity, id));
+  }
+
+  @DeleteMapping("devices/{id}/apps/uninstall")
+  public ResponseEntity<AppInstallResponse> uninstallApp(
+      @PathVariable Long id,
+      @RequestBody AppInstallRequest entity) {
+    return ResponseEntity.status(HttpStatus.OK).body(userDeviceService.uninstallApp(entity, id));
+  }
+
+  @GetMapping("devices/{id}/apps/updates")
+  public ResponseEntity<CheckUpdatesResponse> checkAppUpdates(@PathVariable Long id) {
+    return ResponseEntity.status(HttpStatus.OK).body(userDeviceService.checkAppUpdates(id));
   }
 
   @DeleteMapping("devices/{id}")

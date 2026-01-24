@@ -1,18 +1,23 @@
 package io.github.roilin.crossplatform_updater.services.impl;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import io.github.roilin.crossplatform_updater.dto.AppInstallRequest;
 import io.github.roilin.crossplatform_updater.dto.AppInstallResponse;
+import io.github.roilin.crossplatform_updater.dto.AppVersionUpdateInfoDto;
+import io.github.roilin.crossplatform_updater.dto.CheckUpdatesResponse;
 import io.github.roilin.crossplatform_updater.dto.UserDeviceRequest;
 import io.github.roilin.crossplatform_updater.dto.UserDeviceResponse;
 import io.github.roilin.crossplatform_updater.exception.ResourceNotFoundException;
 import io.github.roilin.crossplatform_updater.mapper.UserDeviceMapper;
 import io.github.roilin.crossplatform_updater.models.AppVersion;
+import io.github.roilin.crossplatform_updater.models.Application;
 import io.github.roilin.crossplatform_updater.models.UserDevice;
 import io.github.roilin.crossplatform_updater.models.user.User;
 import io.github.roilin.crossplatform_updater.repositories.UserDeviceRepository;
@@ -42,14 +47,16 @@ public class UserDeviceServiceImpl implements UserDeviceService {
   @Override
   public List<UserDeviceResponse> getAll() {
     User user = authService.getAuthenticatedUser();
-    return userDeviceRepository.findAllByUser(user).stream().map(UserDeviceMapper::toResponseDto).collect(Collectors.toList());
+    return userDeviceRepository.findAllByUser(user).stream().map(UserDeviceMapper::toResponseDto)
+        .collect(Collectors.toList());
   }
 
   @Override
   public List<UserDeviceResponse> getAllByUsername(String username) {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
-    return userDeviceRepository.findAllByUser(user).stream().map(UserDeviceMapper::toResponseDto).collect(Collectors.toList());
+    return userDeviceRepository.findAllByUser(user).stream().map(UserDeviceMapper::toResponseDto)
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -89,19 +96,75 @@ public class UserDeviceServiceImpl implements UserDeviceService {
     UserDevice device = findById(id);
 
     if (!applicationService.isPlatformSupported(request.appId(), device.getPlatform())) {
-      return new AppInstallResponse("Error", "This app does not support your platform.");
+      return new AppInstallResponse("failure", "This app does not support your platform.");
     }
 
     AppVersion version = appVersionService.findLatest(request.appId(), device.getPlatform());
 
     if (device.getInstalledApps().contains(version)) {
-      return new AppInstallResponse("Error", "The application is already installed.");
+      return new AppInstallResponse("attention", "The application is already installed.");
     }
 
     device.addApplication(version);
     userDeviceRepository.save(device);
 
-    return new AppInstallResponse("Success",
+    return new AppInstallResponse("success",
         String.format("The %s app has been installed successfully.", version.getApplication().getTitle()));
+  }
+
+  @Override
+  public AppInstallResponse updateApp(AppInstallRequest request, Long id) {
+    UserDevice device = findById(id);
+
+    AppVersion installedVersion = device.getInstalledAppVersion(request.appId()).orElseThrow(
+        () -> new RuntimeException(String.format("The requested application is not installed: %s.", request.appId())));
+    AppVersion latestVersion = appVersionService.findLatest(request.appId(), device.getPlatform());
+
+    if (installedVersion == latestVersion) {
+      return new AppInstallResponse("attention", "The latest version is already installed.");
+    }
+
+    device.removeApplication(installedVersion);
+    device.addApplication(latestVersion);
+    userDeviceRepository.save(device);
+
+    return new AppInstallResponse("success",
+        String.format("The %s app has been updated successfully.", latestVersion.getApplication().getTitle()));
+  }
+
+  @Override
+  public CheckUpdatesResponse checkAppUpdates(Long id) {
+    UserDevice device = findById(id);
+    Set<AppVersionUpdateInfoDto> apps = getApplicationsForUpdates(device);
+
+    return new CheckUpdatesResponse(apps);
+  }
+
+  public Set<AppVersionUpdateInfoDto> getApplicationsForUpdates(UserDevice device) {
+    Set<AppVersionUpdateInfoDto> appsForUpdates = new HashSet<>();
+    for (AppVersion installedVersion : device.getInstalledApps()) {
+      Application app = installedVersion.getApplication();
+      AppVersion latestVersion = appVersionService.findLatest(app.getId(), device.getPlatform());
+
+      if (latestVersion != installedVersion) {
+        appsForUpdates.add(new AppVersionUpdateInfoDto(app.getId(), app.getTitle(), installedVersion.getVersion(),
+            latestVersion.getVersion()));
+      }
+    }
+    return appsForUpdates;
+  }
+
+  @Override
+  public AppInstallResponse uninstallApp(AppInstallRequest request, Long id) {
+    UserDevice device = findById(id);
+
+    AppVersion installedVersion = device.getInstalledAppVersion(request.appId()).orElseThrow(
+        () -> new RuntimeException(String.format("The requested application is not installed: %s.", request.appId())));
+
+    device.removeApplication(installedVersion);
+    userDeviceRepository.save(device);
+
+    return new AppInstallResponse("success",
+        String.format("The %s app has been uninstalled successfully.", installedVersion.getApplication().getTitle()));
   }
 }
