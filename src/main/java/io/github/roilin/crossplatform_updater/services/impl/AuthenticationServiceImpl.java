@@ -5,6 +5,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +42,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final CookieUtil cookieUtil;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
     @Value("${jwt.access.duration.minutes}")
     private long accessDurationMinute;
@@ -78,6 +82,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .authenticate(
                         new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password()));
         User user = userService.getUser(loginRequest.username());
+        logger.info("User: {}, is authenticated", user.getUsername());
 
         boolean accessValid = jwtTokenProvider.isValid(access);
         boolean refreshValid = jwtTokenProvider.isValid(refresh);
@@ -93,33 +98,39 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             newAccess.setUser(user);
             addAccessTokenCookie(headers, newAccess);
             tokenRepository.save(newAccess);
+            logger.info("A new access token has been created for user {username}", user.getUsername());
         }
         if (!refreshValid || accessValid) {
             newRefresh = jwtTokenProvider.generatedRefreshToken(refreshDurationDays, ChronoUnit.DAYS, user);
             newRefresh.setUser(user);
             addRefreshTokenCookie(headers, newRefresh);
             tokenRepository.save(newRefresh);
+            logger.info("A new refresh token has been created for user {username}", user.getUsername());
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         LoginResponse loginResponse = new LoginResponse(true, user.getUsername(), user.getRole().getName());
+        logger.info("Login complete for user {}. Role: {}", user.getUsername(), user.getRole().getName());
         return ResponseEntity.ok().headers(headers).body(loginResponse);
     }
 
     @Override
     public ResponseEntity<LoginResponse> refresh(String refresh) {
         if (!jwtTokenProvider.isValid(refresh)) {
+            logger.error("Token is invalid");
             throw new RuntimeException("Token is invalid");
         }
         User user = userService.getUser(jwtTokenProvider.getUsername(refresh));
         Token newAccess = jwtTokenProvider.generatedAccessToken(Map.of("role", user.getRole().getAuthority()),
                 accessDurationMinute, ChronoUnit.MINUTES, user);
         newAccess.setUser(user);
+        logger.info("A new access token has been updated for user {username}", user.getUsername());
         HttpHeaders headers = new HttpHeaders();
         addAccessTokenCookie(headers, newAccess);
         tokenRepository.save(newAccess);
 
         LoginResponse loginResponse = new LoginResponse(true, user.getUsername(), user.getRole().getName());
+        logger.info("Login complete for user {}. Role: {}", user.getUsername(), user.getRole().getName());
         return ResponseEntity.ok().headers(headers).body(loginResponse);
     }
 
@@ -133,6 +144,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         headers.add(HttpHeaders.SET_COOKIE, cookieUtil.deleteRefreshCookie().toString());
 
         LoginResponse loginResponse = new LoginResponse(false, null, null);
+        logger.info("Logout complete for user {}. Role: {}", user.getUsername(), user.getRole().getName());
         return ResponseEntity.ok().headers(headers).body(loginResponse);
     }
 
@@ -146,11 +158,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public User getAuthenticatedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        
+
         if (auth instanceof AnonymousAuthenticationToken) {
+            logger.info("User: {} with this name does not exist", auth.getName());
             throw new RuntimeException("No user");
         }
-        
+
         return userService.getUser(auth.getName());
     }
 
@@ -160,17 +173,26 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getUser(auth.getName());
 
+        logger.info("User: {} is trying to change the password", user.getUsername());
         if (!passwordEncoder.matches(changePasswordRequest.oldPassword(), user.getPassword())) {
+            logger.error("Incorrectly entered old password", user.getUsername());
             throw new UserBadRequestException("Incorrectly entered old password");
         }
         if (!changePasswordRequest.newPassword().equals(changePasswordRequest.repeatedNew())) {
+            logger.error("The new passwords entered do not match", user.getUsername());
             throw new RuntimeException("The new passwords entered do not match");
         }
         if (changePasswordRequest.oldPassword().equals(changePasswordRequest.newPassword())) {
+            logger.error("The new password is the same as the old password", user.getUsername());
             throw new RuntimeException("The new password is the same as the old password");
         }
 
-        userService.changePassword(auth.getName(), passwordEncoder.encode(changePasswordRequest.newPassword()));
+        try {
+            userService.changePassword(auth.getName(), passwordEncoder.encode(changePasswordRequest.newPassword()));
+            logger.info("User: {} has successfully changed the password", user.getUsername());
+        } catch (Exception e) {
+            logger.info("User: {}. Failed to change password", user.getUsername());
+        }
         return logout(access, refresh);
     }
 }
