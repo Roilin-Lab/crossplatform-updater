@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -34,6 +35,7 @@ public class UserDeviceController {
     return userDeviceService.getAll();
   }
 
+  @PreAuthorize("@userDeviceServiceImpl.isDeviceOwner(#id, authentication)")
   @GetMapping("/devices/{id}")
   public ResponseEntity<UserDeviceResponse> getDevice(@PathVariable Long id) {
     return ResponseEntity.status(HttpStatus.OK).body(userDeviceService.getById(id));
@@ -44,6 +46,7 @@ public class UserDeviceController {
     return ResponseEntity.status(HttpStatus.CREATED).body(userDeviceService.create(device));
   }
 
+  @PreAuthorize("@userDeviceServiceImpl.isDeviceOwner(#id, authentication)")
   @PutMapping("devices/{id}")
   public ResponseEntity<UserDeviceResponse> updateDevice(
       @PathVariable Long id,
@@ -51,6 +54,7 @@ public class UserDeviceController {
     return ResponseEntity.status(HttpStatus.OK).body(userDeviceService.update(entity, id));
   }
 
+  @PreAuthorize("@userDeviceServiceImpl.isDeviceOwner(#id, authentication)")
   @PatchMapping("devices/{id}/apps/install")
   public ResponseEntity<AppInstallResponse> installApp(
       @PathVariable Long id,
@@ -58,6 +62,7 @@ public class UserDeviceController {
     return ResponseEntity.status(HttpStatus.OK).body(userDeviceService.installApp(entity, id));
   }
 
+  @PreAuthorize("@userDeviceServiceImpl.isDeviceOwner(#id, authentication)")
   @PatchMapping("devices/{id}/apps/update")
   public ResponseEntity<AppInstallResponse> updateApp(
       @PathVariable Long id,
@@ -65,6 +70,7 @@ public class UserDeviceController {
     return ResponseEntity.status(HttpStatus.OK).body(userDeviceService.updateApp(entity, id));
   }
 
+  @PreAuthorize("@userDeviceServiceImpl.isDeviceOwner(#id, authentication)")
   @DeleteMapping("devices/{id}/apps/uninstall")
   public ResponseEntity<AppInstallResponse> uninstallApp(
       @PathVariable Long id,
@@ -72,11 +78,13 @@ public class UserDeviceController {
     return ResponseEntity.status(HttpStatus.OK).body(userDeviceService.uninstallApp(entity, id));
   }
 
+  @PreAuthorize("@userDeviceServiceImpl.isDeviceOwner(#id, authentication)")
   @GetMapping("devices/{id}/apps/updates")
   public ResponseEntity<CheckUpdatesResponse> checkAppUpdates(@PathVariable Long id) {
     return ResponseEntity.status(HttpStatus.OK).body(userDeviceService.checkAppUpdates(id));
   }
 
+  @PreAuthorize("@userDeviceServiceImpl.isDeviceOwner(#id, authentication)")
   @DeleteMapping("devices/{id}")
   public ResponseEntity<String> deleteDevice(@PathVariable Long id) {
     userDeviceService.deleteById(id);

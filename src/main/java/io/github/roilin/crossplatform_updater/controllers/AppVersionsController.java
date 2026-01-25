@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,6 +55,7 @@ public class AppVersionsController {
     return ResponseEntity.status(HttpStatus.OK).body(appVersionService.getByRangeDate(max, min, pageable));
   }
 
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   @PostMapping("/versions")
   public ResponseEntity<AppVersionResponse> createVersion(@RequestBody AppVersionRequest appVersion) {
     return ResponseEntity
@@ -61,6 +63,7 @@ public class AppVersionsController {
         .body(this.appVersionService.create(appVersion));
   }
 
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   @PutMapping("versions/{id}")
   public ResponseEntity<AppVersionResponse> updateVersion(
       @PathVariable Long id,
@@ -70,6 +73,7 @@ public class AppVersionsController {
         .body(appVersionService.update(appVersion, id));
   }
 
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   @DeleteMapping("versions/{id}")
   public ResponseEntity<String> deleteVersion(@PathVariable Long id) {
     appVersionService.deleteById(id);

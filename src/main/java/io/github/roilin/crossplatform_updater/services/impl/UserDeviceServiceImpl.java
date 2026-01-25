@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import io.github.roilin.crossplatform_updater.dto.AppInstallRequest;
@@ -247,5 +249,14 @@ public class UserDeviceServiceImpl implements UserDeviceService {
 
     return new AppInstallResponse("success",
         String.format("The %s app has been uninstalled successfully.", installedVersion.getApplication().getTitle()));
+  }
+
+  @Override
+  public boolean isDeviceOwner(Long deviceId, Authentication authentication) {
+    String currentUser = ((UserDetails) authentication.getPrincipal()).getUsername();
+
+    UserDevice device = findById(deviceId);
+
+    return device.getUser().getUsername().equals(currentUser);
   }
 }

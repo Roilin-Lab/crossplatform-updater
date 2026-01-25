@@ -2,6 +2,8 @@ package io.github.roilin.crossplatform_updater.services;
 
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
+
 import io.github.roilin.crossplatform_updater.dto.AppInstallRequest;
 import io.github.roilin.crossplatform_updater.dto.AppInstallResponse;
 import io.github.roilin.crossplatform_updater.dto.CheckUpdatesResponse;
@@ -31,4 +33,6 @@ public interface UserDeviceService {
   AppInstallResponse uninstallApp(AppInstallRequest request, Long id);
 
   void deleteById(Long id);
+
+  boolean isDeviceOwner(Long deviceId, Authentication authentication);
 }

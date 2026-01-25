@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -59,23 +60,27 @@ public class ApplicationController {
         .body(applicationService.getAllByFilter(title, publisher, developer, type, pageable));
   }
 
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   @PostMapping()
   public ResponseEntity<ApplicationResponse> createApplication(@RequestBody ApplicationRequest entity) {
     return ResponseEntity.status(HttpStatus.CREATED).body(applicationService.create(entity));
   }
 
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   @PutMapping("/{id}")
   public ResponseEntity<ApplicationResponse> updateApplication(@RequestBody ApplicationRequest entity,
       @PathVariable Long id) {
     return ResponseEntity.status(HttpStatus.OK).body(applicationService.update(entity, id));
   }
 
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   @DeleteMapping("/{id}")
   public ResponseEntity<String> deleteApplication(@PathVariable Long id) {
     applicationService.deleteById(id);
     return ResponseEntity.status(HttpStatus.OK).body("Appliaction deleted successfully.");
   }
 
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   @PatchMapping(value = "/{id}/upload-icon", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<ApplicationResponse> uploadIcon(@RequestParam MultipartFile file, @PathVariable Long id)
       throws SecurityException, IOException {
