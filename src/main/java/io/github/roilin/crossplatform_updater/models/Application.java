@@ -39,6 +39,8 @@ public class Application {
   @Column(unique = true)
   private String title;
 
+  private String icon;
+
   @NotNull
   @Enumerated(EnumType.STRING)
   private ApplicationType type;

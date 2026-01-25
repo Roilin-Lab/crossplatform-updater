@@ -10,6 +10,7 @@ import io.github.roilin.crossplatform_updater.models.enums.Platform;
 public record ApplicationResponse(
     Long id,
     String title,
+    String icon,
     ApplicationType type,
     Set<Platform> supportedPlatform,
     String developer,

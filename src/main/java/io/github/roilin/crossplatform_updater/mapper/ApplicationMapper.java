@@ -13,6 +13,7 @@ public class ApplicationMapper {
     return new ApplicationDto(
         app.getId(),
         app.getTitle(),
+        app.getIcon(),
         app.getType(),
         app.getSupportedPlatform(),
         app.getDeveloper(),
@@ -26,6 +27,7 @@ public class ApplicationMapper {
     return new ApplicationResponse(
         app.getId(),
         app.getTitle(),
+        app.getIcon(),
         app.getType(),
         app.getSupportedPlatform(),
         app.getDeveloper(),
