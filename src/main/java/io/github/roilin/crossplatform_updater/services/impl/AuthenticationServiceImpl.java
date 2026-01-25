@@ -29,6 +29,7 @@ import io.github.roilin.crossplatform_updater.models.Token;
 import io.github.roilin.crossplatform_updater.models.user.User;
 import io.github.roilin.crossplatform_updater.repositories.TokenRepository;
 import io.github.roilin.crossplatform_updater.services.AuthenticationService;
+import io.github.roilin.crossplatform_updater.services.TelegramBotService;
 import io.github.roilin.crossplatform_updater.services.UserService;
 import io.github.roilin.crossplatform_updater.util.CookieUtil;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserService userService;
+    private final TelegramBotService botService;
     private final TokenRepository tokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final CookieUtil cookieUtil;
@@ -110,7 +112,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         LoginResponse loginResponse = new LoginResponse(true, user.getUsername(), user.getRole().getName());
+
         logger.info("Login complete for user {}. Role: {}", user.getUsername(), user.getRole().getName());
+
+        try {
+            botService.sendToAdmin(
+                    String.format("User: %s%nEmail: %s%nRole: %s%nSuccessfully logged in", user.getUsername(),
+                            user.getEmail(), user.getRole().getName()));
+        } catch (Exception e) {
+            logger.error("Failed to send login notification to admin");
+        }
+
         return ResponseEntity.ok().headers(headers).body(loginResponse);
     }
 

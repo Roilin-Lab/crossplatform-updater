@@ -39,3 +39,9 @@ jwt:
     cookie-name: refresh-token
 file:
   upload-dir: ${user.dir}/uploads
+telegram:
+  bot:
+    name: ${BOT_NAME}
+    token: ${BOT_TOKEN}
+    chat-id: ${CHAT_ID}
+interval-in-cron: 0 * * * * *
