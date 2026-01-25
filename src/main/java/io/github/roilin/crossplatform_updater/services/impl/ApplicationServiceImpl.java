@@ -1,11 +1,13 @@
 package io.github.roilin.crossplatform_updater.services.impl;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.github.roilin.crossplatform_updater.dto.ApplicationRequest;
 import io.github.roilin.crossplatform_updater.dto.ApplicationResponse;
@@ -16,6 +18,7 @@ import io.github.roilin.crossplatform_updater.models.enums.ApplicationType;
 import io.github.roilin.crossplatform_updater.models.enums.Platform;
 import io.github.roilin.crossplatform_updater.repositories.ApplicationRepository;
 import io.github.roilin.crossplatform_updater.services.ApplicationService;
+import io.github.roilin.crossplatform_updater.services.FileStorageService;
 import io.github.roilin.crossplatform_updater.specifications.ApplicationSpecifications;
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class ApplicationServiceImpl implements ApplicationService {
 
   private final ApplicationRepository applicationRepository;
+  private final FileStorageService fileStorageService;
 
   @Override
   public Application findById(Long id) {
@@ -87,5 +91,13 @@ public class ApplicationServiceImpl implements ApplicationService {
   @Override
   public void deleteById(Long id) {
     applicationRepository.deleteById(id);
+  }
+
+  @Override
+  public ApplicationResponse updateIcon(Long id, MultipartFile icon) throws SecurityException, IOException {
+    Application app = findById(id);
+    String fileName = fileStorageService.storeFile(icon);
+    app.setIcon(fileName);
+    return ApplicationMapper.toResponseDto(applicationRepository.save(app));
   }
 }

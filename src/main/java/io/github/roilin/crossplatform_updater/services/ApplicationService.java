@@ -1,9 +1,11 @@
 package io.github.roilin.crossplatform_updater.services;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.github.roilin.crossplatform_updater.dto.ApplicationRequest;
 import io.github.roilin.crossplatform_updater.dto.ApplicationResponse;
@@ -34,4 +36,5 @@ public interface ApplicationService {
 
   void deleteById(Long id);
 
+  ApplicationResponse updateIcon(Long id, MultipartFile icon) throws SecurityException, IOException;
 }

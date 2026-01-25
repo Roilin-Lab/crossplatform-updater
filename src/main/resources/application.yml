@@ -19,6 +19,12 @@ spring:
     init:
       mode: always 
       data-locations: classpath:sql/data.sql
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
 jwt: 
   secret: ${JWT_SECRET_KEY}
   access:
@@ -31,3 +37,5 @@ jwt:
       days: 7
       second: 604800
     cookie-name: refresh-token
+file:
+  upload-dir: ${user.dir}/uploads
