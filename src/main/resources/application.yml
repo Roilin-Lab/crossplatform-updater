@@ -39,9 +39,11 @@ jwt:
     cookie-name: refresh-token
 file:
   upload-dir: ${user.dir}/uploads
+report:
+    template-location: classpath:templates/report-template.xlsx
 telegram:
   bot:
     name: ${BOT_NAME}
     token: ${BOT_TOKEN}
     chat-id: ${CHAT_ID}
-interval-in-cron: 0 * * * * *
+interval-in-cron: 0 0 0 * * *
